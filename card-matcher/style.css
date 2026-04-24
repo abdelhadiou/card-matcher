@@ -1,0 +1,391 @@
+/* =============================================
+   GREED ISLAND: THE CARDS MATCHER
+   Hunter × Hunter Themed UI
+   ============================================= */
+
+:root {
+  --gold: #d4a843;
+  --gold-bright: #f5c842;
+  --gold-dark: #8b6914;
+  --green-dark: #0a2010;
+  --green-mid: #0f3a1a;
+  --green-light: #1a5c2a;
+  --green-glow: #22ff66;
+  --red-nen: #cc2233;
+  --red-bright: #ff3344;
+  --white: #f0e8d0;
+  --grey: #8a8070;
+  --card-bg: #0c2818;
+  --card-border: #2a6030;
+  --card-front: #1a4028;
+  --shadow-gold: 0 0 20px rgba(212,168,67,0.4);
+  --shadow-green: 0 0 20px rgba(34,255,102,0.3);
+  --font-display: 'Cinzel Decorative', serif;
+  --font-body: 'Exo 2', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--green-dark);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Background ── */
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+
+.hex-grid {
+  position: absolute; inset: 0;
+  background-image:
+    repeating-linear-gradient(60deg, rgba(34,100,50,0.07) 0px, transparent 1px, transparent 30px),
+    repeating-linear-gradient(120deg, rgba(34,100,50,0.07) 0px, transparent 1px, transparent 30px),
+    repeating-linear-gradient(0deg, rgba(34,100,50,0.07) 0px, transparent 1px, transparent 30px);
+  background-size: 60px 104px;
+}
+
+.glow-orb {
+  position: absolute; border-radius: 50%; filter: blur(80px);
+  animation: orbFloat 8s ease-in-out infinite alternate;
+}
+.orb1 { width: 400px; height: 400px; top: -100px; left: -100px; background: radial-gradient(circle, rgba(212,168,67,0.15), transparent 70%); }
+.orb2 { width: 300px; height: 300px; bottom: 0; right: -80px; background: radial-gradient(circle, rgba(34,255,102,0.1), transparent 70%); animation-delay: -3s; }
+.orb3 { width: 250px; height: 250px; top: 50%; left: 50%; background: radial-gradient(circle, rgba(204,34,51,0.08), transparent 70%); animation-delay: -5s; }
+
+@keyframes orbFloat {
+  from { transform: translate(0,0) scale(1); }
+  to { transform: translate(30px, 40px) scale(1.1); }
+}
+
+/* ── Site Header ── */
+.site-header {
+  position: relative; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, rgba(10,32,16,0.97), rgba(15,58,26,0.97));
+  border-bottom: 2px solid var(--gold-dark);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 1px 0 var(--gold-dark);
+}
+
+.header-logo { display: flex; align-items: center; gap: 12px; }
+.logo-icon { font-size: 2rem; filter: drop-shadow(0 0 8px var(--gold)); }
+.logo-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem; letter-spacing: 3px;
+  color: var(--gold-bright);
+  text-shadow: 0 0 10px var(--gold);
+}
+.logo-sub { font-size: 0.65rem; letter-spacing: 4px; color: var(--grey); text-transform: uppercase; }
+
+.header-controls { display: flex; gap: 10px; }
+
+.btn-nen {
+  font-family: var(--font-body); font-weight: 700;
+  font-size: 0.75rem; letter-spacing: 2px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1.5px solid var(--gold-dark);
+  color: var(--gold);
+  cursor: pointer; text-transform: uppercase;
+  transition: all 0.2s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.btn-nen:hover { border-color: var(--gold-bright); color: var(--gold-bright); background: rgba(212,168,67,0.1); box-shadow: var(--shadow-gold); }
+.btn-nen.btn-danger { border-color: var(--red-nen); color: var(--red-bright); }
+.btn-nen.btn-danger:hover { background: rgba(204,34,51,0.15); box-shadow: 0 0 15px rgba(255,51,68,0.3); }
+.hint-cost { font-size: 0.6rem; opacity: 0.6; }
+
+/* ── Score Panel ── */
+.score-panel {
+  position: relative; z-index: 10;
+  padding: 8px 24px;
+  background: rgba(8,20,12,0.9);
+  border-bottom: 1px solid rgba(42,96,48,0.5);
+}
+
+.hud-grid { display: flex; gap: 32px; justify-content: center; }
+.hud-item { text-align: center; min-width: 70px; }
+.hud-val {
+  font-family: var(--font-display); font-size: 1.4rem;
+  color: var(--gold-bright); text-shadow: 0 0 10px var(--gold);
+  line-height: 1;
+}
+.hud-lbl { font-size: 0.55rem; letter-spacing: 3px; color: var(--grey); margin-top: 2px; text-transform: uppercase; }
+
+.timer-warn .hud-val { color: #ffaa00; text-shadow: 0 0 10px #ffaa00; animation: timerPulse 1s ease-in-out infinite; }
+.timer-urgent .hud-val { color: var(--red-bright); text-shadow: 0 0 15px var(--red-bright); animation: timerPulse 0.4s ease-in-out infinite; }
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+/* ── Nen Bar ── */
+.nen-bar {
+  position: relative; z-index: 10;
+  padding: 6px 24px;
+  background: rgba(6,14,9,0.9);
+  border-bottom: 1px solid rgba(42,96,48,0.3);
+}
+
+.nen-bar-wrapper { display: flex; align-items: center; gap: 12px; max-width: 600px; margin: 0 auto; }
+.nen-label { font-size: 0.65rem; letter-spacing: 2px; min-width: 200px; font-weight: 700; transition: color 0.3s; }
+.nen-bar-track {
+  flex: 1; height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px; overflow: hidden;
+}
+.nen-bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.4s ease, background 0.3s;
+  box-shadow: 0 0 8px currentColor;
+}
+.nen-count { font-size: 0.6rem; color: var(--grey); white-space: nowrap; }
+
+/* ── Hisoka Message ── */
+.hisoka-message {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+  z-index: 100;
+  background: linear-gradient(135deg, rgba(10,32,16,0.97), rgba(25,10,5,0.97));
+  border: 1px solid var(--gold-dark);
+  padding: 10px 20px;
+  font-size: 0.8rem; font-style: italic;
+  color: var(--white);
+  max-width: 500px; text-align: center;
+  clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+  opacity: 0; transition: opacity 0.4s, transform 0.4s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(212,168,67,0.1);
+}
+.hisoka-message.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Game Area ── */
+.game-area {
+  position: relative; z-index: 5;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 16px;
+  min-height: calc(100vh - 180px);
+}
+
+/* ── Card Grid ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 760px;
+}
+
+/* ── Card ── */
+.card {
+  aspect-ratio: 3/4;
+  perspective: 600px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s;
+}
+.card:hover:not(.matched):not(.flipped) { transform: translateY(-3px) scale(1.03); }
+.card:hover:not(.matched):not(.flipped) .card-inner { box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 12px rgba(212,168,67,0.3); }
+
+.card-inner {
+  width: 100%; height: 100%;
+  position: relative; transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.card.flipped .card-inner,
+.card.matched .card-inner { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid;
+  overflow: hidden;
+}
+
+/* Card Back (face-down) */
+.card-back {
+  background: linear-gradient(135deg, #0e2d18, #122a15, #0a1f0e);
+  border-color: var(--card-border);
+  flex-direction: column;
+  position: relative;
+}
+.card-back::before {
+  content: '';
+  position: absolute; inset: 3px;
+  border: 1px solid rgba(42,96,48,0.4);
+  border-radius: 4px;
+  background: repeating-linear-gradient(
+    45deg, transparent, transparent 4px,
+    rgba(34,100,50,0.05) 4px, rgba(34,100,50,0.05) 5px
+  );
+}
+.card-back-pattern {
+  font-size: 1.2rem; color: rgba(42,96,48,0.6); z-index: 1;
+  text-shadow: 0 0 6px rgba(34,255,102,0.2);
+}
+
+/* Card Front (face-up) */
+.card-front {
+  background: linear-gradient(135deg, #1a4028, #0f2a18);
+  border-color: var(--gold-dark);
+  transform: rotateY(180deg);
+}
+.card-symbol { font-size: 1.6rem; filter: drop-shadow(0 0 6px rgba(255,255,255,0.3)); }
+
+/* Matched card */
+.card.matched .card-face.card-front {
+  background: linear-gradient(135deg, #1a4a28, #0f3518);
+  border-color: var(--green-glow);
+  box-shadow: inset 0 0 20px rgba(34,255,102,0.15);
+}
+.card.matched .card-inner { box-shadow: 0 0 12px rgba(34,255,102,0.4); }
+
+/* Selected card */
+.card.selected .card-face.card-back {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 16px var(--gold), inset 0 0 10px rgba(212,168,67,0.2);
+}
+
+/* Hint glow */
+.card.hint-glow .card-face.card-back {
+  border-color: #00ccff;
+  box-shadow: 0 0 20px rgba(0,200,255,0.6), inset 0 0 12px rgba(0,200,255,0.2);
+  animation: hintPulse 0.8s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%,100% { box-shadow: 0 0 20px rgba(0,200,255,0.6); }
+  50% { box-shadow: 0 0 35px rgba(0,200,255,0.9); }
+}
+
+/* Nen victim */
+.card.nen-victim .card-inner { animation: nenShake 0.5s ease-in-out; }
+@keyframes nenShake {
+  0%,100% { transform: rotateY(0deg) translateX(0); }
+  20% { transform: rotateY(0deg) translateX(-5px); }
+  40% { transform: rotateY(0deg) translateX(5px); }
+  60% { transform: rotateY(0deg) translateX(-3px); }
+  80% { transform: rotateY(0deg) translateX(3px); }
+}
+
+/* Probability Overlay */
+.prob-overlay {
+  position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+  font-size: 0.5rem; font-weight: 700; letter-spacing: 0.5px;
+  padding: 1px 5px; border-radius: 3px; z-index: 5;
+  font-family: var(--font-body);
+  pointer-events: none;
+}
+.prob-high { background: rgba(34,200,80,0.85); color: #002210; }
+.prob-mid  { background: rgba(255,170,0,0.85);  color: #1a0d00; }
+.prob-low  { background: rgba(180,50,50,0.7);   color: #fff; }
+
+/* ── Game Overlay ── */
+.game-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(5,15,8,0.92);
+  backdrop-filter: blur(8px);
+  transition: opacity 0.3s;
+}
+.game-overlay.hidden { display: none; }
+
+.overlay-box {
+  text-align: center;
+  max-width: 480px; width: 90%;
+  padding: 40px 32px;
+  background: linear-gradient(160deg, rgba(15,40,20,0.98), rgba(8,22,12,0.98));
+  border: 1px solid var(--gold-dark);
+  box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 30px rgba(212,168,67,0.15);
+  clip-path: polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%);
+  position: relative;
+}
+.overlay-box::before {
+  content: '';
+  position: absolute; inset: 6px;
+  border: 1px solid rgba(42,96,48,0.3);
+  clip-path: polygon(14px 0%, 100% 0%, calc(100% - 14px) 100%, 0% 100%);
+  pointer-events: none;
+}
+
+.overlay-hisoka-art {
+  font-size: 4rem;
+  filter: drop-shadow(0 0 20px var(--gold));
+  margin-bottom: 12px;
+  animation: floatCard 3s ease-in-out infinite alternate;
+}
+@keyframes floatCard {
+  from { transform: translateY(0) rotate(-3deg); }
+  to { transform: translateY(-10px) rotate(3deg); }
+}
+
+.overlay-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem; letter-spacing: 4px;
+  color: var(--gold-bright);
+  text-shadow: 0 0 20px var(--gold);
+  margin-bottom: 8px;
+}
+.overlay-subtitle {
+  font-size: 0.8rem; font-style: italic; color: var(--grey);
+  margin-bottom: 16px; line-height: 1.5;
+}
+.overlay-stats {
+  font-size: 0.8rem; color: var(--white);
+  margin-bottom: 20px; line-height: 1.8;
+}
+
+.btn-start {
+  font-family: var(--font-display);
+  font-size: 0.9rem; letter-spacing: 3px;
+  padding: 14px 36px;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: var(--green-dark);
+  border: none; cursor: pointer; font-weight: 900;
+  clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(212,168,67,0.4);
+}
+.btn-start:hover {
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  box-shadow: 0 6px 30px rgba(212,168,67,0.6);
+  transform: translateY(-2px);
+}
+
+.overlay-rules {
+  margin-top: 20px;
+  border-top: 1px solid rgba(42,96,48,0.4);
+  padding-top: 16px;
+}
+.overlay-rules p {
+  font-size: 0.7rem; color: var(--grey);
+  margin-bottom: 5px; letter-spacing: 0.5px;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--green-dark); }
+::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .card-grid { gap: 5px; max-width: 100%; }
+  .card-symbol { font-size: 1.1rem; }
+  .hud-grid { gap: 16px; }
+  .hud-val { font-size: 1.1rem; }
+  .header-controls { gap: 6px; }
+  .btn-nen { padding: 6px 10px; font-size: 0.65rem; }
+  .logo-title { font-size: 0.9rem; }
+}
+
+@media (max-width: 400px) {
+  .card-grid { grid-template-columns: repeat(8, 1fr); gap: 3px; }
+  .card-symbol { font-size: 0.9rem; }
+}

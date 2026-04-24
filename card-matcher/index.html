@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Greed Island: The Cards Matcher</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- Background particles -->
+  <div class="bg-layer">
+    <div class="hex-grid"></div>
+    <div class="glow-orb orb1"></div>
+    <div class="glow-orb orb2"></div>
+    <div class="glow-orb orb3"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-logo">
+      <span class="logo-icon">🃏</span>
+      <div>
+        <div class="logo-title">GREED ISLAND</div>
+        <div class="logo-sub">THE CARDS MATCHER · CHALLENGE 01</div>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button id="btn-hint" class="btn-nen">💡 HINT <span class="hint-cost">(-2pts)</span></button>
+      <button id="btn-restart" class="btn-nen btn-danger">↺ RESTART</button>
+    </div>
+  </header>
+
+  <!-- HUD -->
+  <div id="score-panel" class="score-panel"></div>
+
+  <!-- Nen interference bar -->
+  <div id="nen-bar" class="nen-bar"></div>
+
+  <!-- Hisoka message -->
+  <div id="hisoka-message" class="hisoka-message"></div>
+
+  <!-- Main Grid -->
+  <main class="game-area">
+    <div id="card-grid" class="card-grid"></div>
+  </main>
+
+  <!-- Start / End Overlay -->
+  <div id="game-overlay" class="game-overlay">
+    <div class="overlay-box">
+      <div class="overlay-hisoka-art">🃏</div>
+      <div class="overlay-title">GREED ISLAND</div>
+      <div class="overlay-subtitle">"This is Greed Island, little Hunter. Nothing is simple."</div>
+      <div class="overlay-stats"></div>
+      <button id="btn-start" class="btn-start">⚡ BEGIN THE HUNT</button>
+      <div class="overlay-rules">
+        <p>🃏 Find all 20 pairs · 60 seconds · 40 cards (8×5)</p>
+        <p>⚡ Probability hints update after each flip</p>
+        <p>💀 3 mismatches in a row → Hisoka's Nen activates</p>
+        <p>🏆 Perfect score = 200pts (20 moves only)</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
